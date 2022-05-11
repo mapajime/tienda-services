@@ -2,7 +2,7 @@
 
 namespace TiendaServices.Entities
 {
-    public class Product
+    public class Product : IEntity
     {
         public Guid Id { get; set; }
         public string ProductName { get; set; }
@@ -11,6 +11,9 @@ namespace TiendaServices.Entities
         public string Description { get; set; }
         public int Stock { get; set; }
         public DateTime CreateDate { get; set; }
+        public DateTime CreationDate { get; set; }
+        public bool Active { get; set; }
+        public DateTime ModificationDate { get; set; }
         public Guid FKCategory { get; set; }
     }
 }
