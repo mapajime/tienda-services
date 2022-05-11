@@ -11,6 +11,6 @@ namespace TiendaServices.Entities
         public string Description { get; set; }
         public int Stock { get; set; }
         public DateTime CreateDate { get; set; }
-        public Category Category { get; set; }
+        public Guid FKCategory { get; set; }
     }
 }

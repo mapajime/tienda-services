@@ -9,7 +9,7 @@ namespace TiendaServices.Entities
         public string DocumentNumber { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public Country Country { get; set; }
-        public DocumentType Document { get; set; }
+        public Guid FKCountry { get; set; }
+        public Guid FKDocument { get; set; }
     }
 }
