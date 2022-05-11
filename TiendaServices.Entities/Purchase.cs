@@ -7,6 +7,5 @@ namespace TiendaServices.Entities
         public Guid Id { get; set; }
         public DateTime PurchaseDate { get; set; }
         public Guid FKCustomer { get; set; }
-        public Guid FKProduct { get; set; }
     }
 }
