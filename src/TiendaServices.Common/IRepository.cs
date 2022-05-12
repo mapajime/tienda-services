@@ -6,7 +6,7 @@ namespace TiendaServices.Common
 {
     public interface IRepository<TEntity> where TEntity : IEntity
     {
-        Task<TEntity> CreateAsync(TEntity value);
+        Task<bool> CreateAsync(TEntity value);
 
         Task<bool> UpdateAsync(TEntity value);
 

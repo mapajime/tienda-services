@@ -16,14 +16,37 @@ namespace TiendaServices.DataAccess.Implementations
             _connectionString = connectionString;
         }
 
-        public Task<Category> CreateAsync(Category value)
+        public async Task<bool> CreateAsync(Category value)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"INSERT INTO [dbo].[Categorias]
+                                                           ([Id]
+                                                           ,[Nombre]
+                                                           ,[Descripcion]
+                                                           ,[FechaCreacion]
+                                                           ,[FechaModificacion])
+                                                        VALUES ( @Id, @Nombre, @Descripcion, @FechaCreacion, @FechaModificacion", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Nombre", value.Name);
+                sqlCommand.Parameters.AddWithValue("Descripcion", value.Description);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
+            }
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Categorias] WHERE Id = @id", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Id", id);
+                await sqlCommand.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<IEnumerable<Category>> GetAllAsync()
@@ -58,7 +81,7 @@ namespace TiendaServices.DataAccess.Implementations
 
         public Task<Category> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public Task<int> GetCountAsync()
