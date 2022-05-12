@@ -7,7 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiendaServices.Entities", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiendaServices.Common", "src\TiendaServices.Common\TiendaServices.Common.csproj", "{525BD604-1597-47EC-BD76-5B2E4434638B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiendaServices.DataAccess", "src\TiendaServices.DataAccess\TiendaServices.DataAccess.csproj", "{F8F07F76-D39A-4670-8FED-189E507D481E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiendaServices.DataAccess", "src\TiendaServices.DataAccess\TiendaServices.DataAccess.csproj", "{F8F07F76-D39A-4670-8FED-189E507D481E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6D0454E6-DF61-4D10-A842-BC0E5E85D4F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{96FA9BEB-EB7A-4DFD-A063-E8C89C04BA79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +34,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E8E4C1D-896D-4A92-B7FA-9685C95D0A38} = {6D0454E6-DF61-4D10-A842-BC0E5E85D4F0}
+		{525BD604-1597-47EC-BD76-5B2E4434638B} = {6D0454E6-DF61-4D10-A842-BC0E5E85D4F0}
+		{F8F07F76-D39A-4670-8FED-189E507D481E} = {6D0454E6-DF61-4D10-A842-BC0E5E85D4F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F4D1765E-24B7-4E56-A5A7-90EC41814FB1}
