@@ -4,18 +4,18 @@ using System.Threading.Tasks;
 
 namespace TiendaServices.Common
 {
-    public interface IRepository<T> where T : IEntity
+    public interface IRepository<TEntity> where TEntity : IEntity
     {
-        Task<T> CreateAsync(T value);
+        Task<TEntity> CreateAsync(TEntity value);
 
-        Task<bool> UpdateAsync(T value);
+        Task<bool> UpdateAsync(TEntity value);
 
         Task DeleteAsync(Guid id);
 
         Task<int> GetCountAsync();
 
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<TEntity>> GetAllAsync();
 
-        Task<T> GetByIdAsync(Guid id);
+        Task<TEntity> GetByIdAsync(Guid id);
     }
 }

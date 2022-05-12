@@ -1,4 +1,5 @@
 ﻿using System;
+using TiendaServices.Common;
 
 namespace TiendaServices.Entities
 {
