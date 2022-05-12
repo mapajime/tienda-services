@@ -41,7 +41,7 @@ namespace TiendaServices.DataAccess.Implementations
         public async Task DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
-        {
+            {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Categorias] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
@@ -79,19 +79,65 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
-        public Task<Category> GetByIdAsync(Guid id)
+        public async Task<Category> GetByIdAsync(Guid id)
         {
-            return null;
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"SELECT[Id]
+                                                      ,[Nombre]
+                                                      ,[Descripcion]
+                                                      ,[FechaCreacion]
+                                                      ,[FechaModificacion]
+                                                       FROM [dbo].[Categorias] WHERE Id = @Id", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Id", id);
+                using (var reader = sqlCommand.ExecuteReader())
+                {
+                    var category = new Category();
+                    while (reader.Read())
+                    {
+                        category.Id = reader.GetGuid(0);
+                        category.Name = reader.GetString(1);
+                        category.Description = reader.GetString(2);
+                        category.CreationDate = reader.GetDateTime(3);
+                        category.ModificationDate = reader.GetDateTime(4);
+                    }
+                    return category;
+                }
+            }
         }
 
-        public Task<int> GetCountAsync()
+        public async Task<int> GetCountAsync()
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Categorias]", sqlConnection);
+                var count = (int)sqlCommand.ExecuteScalar();
+                return count;
+            }
         }
 
-        public Task<bool> UpdateAsync(Category value)
+        public async Task<bool> UpdateAsync(Category value)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[Categorias]
+                                                        SET [Nombre] = @Nombre
+                                                      ,[Descripcion] =@Descripcion
+                                                      ,[FechaCreacion] = @FechaCreacion
+                                                      ,[FechaModificacion] = @FechaModificacion
+                                                       WHERE Id=@id ", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("@Nombre", value.Name);
+                sqlCommand.Parameters.AddWithValue("@Descripcion", value.Description);
+                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+
+                var updateCategory = sqlCommand.ExecuteNonQuery();
+                return updateCategory == 1;
+            }
         }
     }
 }
