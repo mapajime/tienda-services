@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{96FA9BEB-E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiendaServices.Business", "TiendaServices.Business\TiendaServices.Business.csproj", "{D4C9D5C6-A600-424C-9452-A63EE41B2991}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiendaServices.Business.Test", "TiendaServices.Business.Test\TiendaServices.Business.Test.csproj", "{013E18F0-8A9C-4DED-9F0E-A4AD5B675062}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiendaServices.Business.Tests", "TiendaServices.Business.Test\TiendaServices.Business.Tests.csproj", "{013E18F0-8A9C-4DED-9F0E-A4AD5B675062}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
