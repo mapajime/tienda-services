@@ -33,14 +33,14 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[FkCiudad]
                                                           ,[FkTipoDocumento])
                                                         VALUES ( @Id, @NombreUsuario, @NumeroDocumento,@Email, @Telefono, @Activo, @ @FechaCreacion, @FechaModificacion, @FkCiudad, @FkTipoDocumento", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("NombreUsuario", value.Name);
                 sqlCommand.Parameters.AddWithValue("NumeroDocumento", value.DocumentNumber);
                 sqlCommand.Parameters.AddWithValue("Email", value.Email);
                 sqlCommand.Parameters.AddWithValue("Telefono", value.Phone);
                 sqlCommand.Parameters.AddWithValue("Activo", value.Active);
-                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("FkCiudad", value.FKCountry);
                 sqlCommand.Parameters.AddWithValue("FkTipoDocumento", value.FKDocument);
                 var result = await sqlCommand.ExecuteNonQueryAsync();
@@ -48,14 +48,15 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Usuarios] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                await sqlCommand.ExecuteNonQueryAsync();
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
             }
         }
 
@@ -76,7 +77,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[FkTipoDocumento]
                                                        FROM [dbo].[Usuarios]", sqlConnection);
 
-                using var result = sqlCommand.ExecuteReader();
+                using var result = await sqlCommand.ExecuteReaderAsync();
                 List<Customer> customers = new List<Customer>();
 
                 while (await result.ReadAsync())
@@ -117,7 +118,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[FkTipoDocumento]
                                                        FROM [dbo].[Usuarios] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                using (var reader = sqlCommand.ExecuteReader())
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
                     var customer = new Customer();
                     while (reader.Read())
@@ -144,7 +145,7 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Usuarios]", sqlConnection);
-                var count = (int)sqlCommand.ExecuteScalar();
+                var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
@@ -160,23 +161,20 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[Email] = @Email
                                                           ,[Telefono] = @Telefono
                                                           ,[Activo] =@Activo
-                                                          ,[FechaCreacion] = @FechaCreacion
                                                           ,[FechaModificacion] = @FechaModificacion
                                                           ,[FkCiudad] = @FkCiudad
                                                           ,[FkTipoDocumento] = @FkTipoDocumento
                                                         WHERE Id = @id ", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
                 sqlCommand.Parameters.AddWithValue("@NombreUsuario", value.Name);
                 sqlCommand.Parameters.AddWithValue("@NumeroDocumento", value.DocumentNumber);
                 sqlCommand.Parameters.AddWithValue("@Email", value.Email);
                 sqlCommand.Parameters.AddWithValue("@Telefono", value.Phone);
                 sqlCommand.Parameters.AddWithValue("@Activo", value.Active);
-                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("@FkCiudad", value.FKCountry);
                 sqlCommand.Parameters.AddWithValue("@FkTipoDocumento", value.FKDocument);
 
-                var updateCustomer = sqlCommand.ExecuteNonQuery();
+                var updateCustomer = await sqlCommand.ExecuteNonQueryAsync();
                 return updateCustomer == 1;
             }
         }

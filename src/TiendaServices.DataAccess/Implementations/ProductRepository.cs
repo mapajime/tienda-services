@@ -33,29 +33,30 @@ namespace TiendaServices.DataAccess.Implementations
                                                             ,[FechaModificacion]
                                                             ,[FkCategoria])
                                                         VALUES ( @Id, @NombreProducto, @Precio, @Marca, @Descripcion, @Stock, @Activo, @FechaCreacion, @FechaModificacion, @FkCategoria", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("NombreProducto", value.ProductName);
                 sqlCommand.Parameters.AddWithValue("Precio", value.Price);
                 sqlCommand.Parameters.AddWithValue("Marca", value.Trademark);
                 sqlCommand.Parameters.AddWithValue("Descripcion", value.Description);
                 sqlCommand.Parameters.AddWithValue("Stock", value.Stock);
                 sqlCommand.Parameters.AddWithValue("Activo", value.Active);
-                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("FkCategoria", value.FKCategory);
                 var result = await sqlCommand.ExecuteNonQueryAsync();
                 return result == 1;
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Produtos] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                await sqlCommand.ExecuteNonQueryAsync();
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
             }
         }
 
@@ -76,7 +77,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FkCategoria]
                                                        FROM [dbo].[Produtos]", sqlConnection);
 
-                using var result = sqlCommand.ExecuteReader();
+                using var result = await sqlCommand.ExecuteReaderAsync();
                 List<Product> products = new List<Product>();
 
                 while (await result.ReadAsync())
@@ -116,7 +117,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FkCategoria]
                                                        FROM [dbo].[Produtos] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                using (var reader = sqlCommand.ExecuteReader())
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
                     var product = new Product();
                     while (reader.Read())
@@ -143,7 +144,7 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Produtos]", sqlConnection);
-                var count = (int)sqlCommand.ExecuteScalar();
+                var count = (int) await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
@@ -160,22 +161,19 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[Descripcion] = @Descripcion
                                                       ,[Stock] = @Stock
                                                       ,[Activo] = @Activo
-                                                      ,[FechaCreacion] = @FechaCreacion
                                                       ,[FechaModificacion] = @FechaModificacion
                                                       ,[FkCategoria] = @FkCategoria
                                                        WHERE Id=@id ", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
                 sqlCommand.Parameters.AddWithValue("@NombreProducto", value.ProductName);
                 sqlCommand.Parameters.AddWithValue("@Precio", value.Price);
                 sqlCommand.Parameters.AddWithValue("@Marca", value.Trademark);
                 sqlCommand.Parameters.AddWithValue("@Descripcion", value.Description);
                 sqlCommand.Parameters.AddWithValue("@Stock", value.Description);
                 sqlCommand.Parameters.AddWithValue("@Activo", value.Description);
-                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("@FkCategoria", value.ModificationDate);
 
-                var updateCategory = sqlCommand.ExecuteNonQuery();
+                var updateCategory = await sqlCommand.ExecuteNonQueryAsync();
                 return updateCategory == 1;
             }
         }

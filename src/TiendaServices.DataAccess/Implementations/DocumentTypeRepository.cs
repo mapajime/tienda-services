@@ -27,23 +27,24 @@ namespace TiendaServices.DataAccess.Implementations
                                                            ,[FechaCreacion]
                                                            ,[FechaModificacion])
                                                         VALUES ( @Id, @Nombre, @FechaCreacion, @FechaModificacion", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("Nombre", value.Name);
-                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 var result = await sqlCommand.ExecuteNonQueryAsync();
                 return result == 1;
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[TipoDocumentos] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                await sqlCommand.ExecuteNonQueryAsync();
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
             }
         }
 
@@ -58,12 +59,12 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FechaModificacion]
                                                        FROM [dbo].[TipoDocumentos]", sqlConnection);
 
-                using var result = sqlCommand.ExecuteReader();
-                List<DocumentType> documenType = new List<DocumentType>();
+                using var result = await sqlCommand.ExecuteReaderAsync();
+                List<DocumentType> documentType = new List<DocumentType>();
 
                 while (await result.ReadAsync())
                 {
-                    documenType.Add(new DocumentType
+                    documentType.Add(new DocumentType
                     {
                         Id = result.GetGuid(0),
                         Name = result["Nombre"].ToString(),
@@ -71,7 +72,7 @@ namespace TiendaServices.DataAccess.Implementations
                         ModificationDate = result.GetDateTime(4)
                     });
                 }
-                return documenType;
+                return documentType;
             }
         }
 
@@ -86,7 +87,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FechaModificacion]
                                                        FROM [dbo].[TipoDocumentos] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                using (var reader = sqlCommand.ExecuteReader())
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
                     var documentType = new DocumentType();
                     while (reader.Read())
@@ -107,7 +108,7 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[TipoDocumentos]", sqlConnection);
-                var count = (int)sqlCommand.ExecuteScalar();
+                var count = (int) await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
@@ -119,15 +120,12 @@ namespace TiendaServices.DataAccess.Implementations
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[TipoDocumentos]
                                                            SET [Nombre] = @Nombre
-                                                          ,[FechaCreacion] = @FechaCreacion
                                                           ,[FechaModificacion] = @FechaModificacion
                                                            WHERE Id = @id ", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
                 sqlCommand.Parameters.AddWithValue("@Nombre", value.Name);
-                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
 
-                var updateDocumenttype = sqlCommand.ExecuteNonQuery();
+                var updateDocumenttype = await sqlCommand.ExecuteNonQueryAsync();
                 return updateDocumenttype == 1;
             }
         }

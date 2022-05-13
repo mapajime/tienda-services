@@ -28,24 +28,25 @@ namespace TiendaServices.DataAccess.Implementations
                                                             ,[FechaModificacion]
                                                             ,[FkCliente])
                                                         VALUES ( @Id, @FechaCompra, @FechaCreacion, @FechaModificacion, @FkCliente", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("FechaCompra", value.PurchaseDate);
-                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("FkCliente", value.FKCustomer);
                 var result = await sqlCommand.ExecuteNonQueryAsync();
                 return result == 1;
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Compras] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                await sqlCommand.ExecuteNonQueryAsync();
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
             }
         }
 
@@ -61,7 +62,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                         ,[FkCliente]
                                                        FROM [dbo].[Compras]", sqlConnection);
 
-                using var result = sqlCommand.ExecuteReader();
+                using var result = await sqlCommand.ExecuteReaderAsync();
                 List<Purchase> purchases = new List<Purchase>();
 
                 while (await result.ReadAsync())
@@ -91,7 +92,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FkCliente]
                                                        FROM [dbo].[Compras] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                using (var reader = sqlCommand.ExecuteReader())
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
                     var purchase = new Purchase();
                     while (reader.Read())
@@ -113,7 +114,7 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Compras]", sqlConnection);
-                var count = (int)sqlCommand.ExecuteScalar();
+                var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
@@ -125,17 +126,14 @@ namespace TiendaServices.DataAccess.Implementations
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[Compras]
                                                         SET [FechaCompra] = @FechaCompra
-                                                          ,[FechaCreacion] = @FechaCreacion
                                                           ,[FechaModificacion] = @FechaModificacion
                                                           ,[FkCliente] = @FkCliente
                                                         WHERE Id=@id ", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
                 sqlCommand.Parameters.AddWithValue("@FechaCompra", value.PurchaseDate);
-                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("@FkCliente", value.FKCustomer);
 
-                var updatePurchase = sqlCommand.ExecuteNonQuery();
+                var updatePurchase = await sqlCommand.ExecuteNonQueryAsync();
                 return updatePurchase == 1;
             }
         }

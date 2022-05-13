@@ -28,24 +28,25 @@ namespace TiendaServices.DataAccess.Implementations
                                                            ,[FechaCreacion]
                                                            ,[FechaModificacion])
                                                         VALUES ( @Id, @Nombre, @Descripcion, @FechaCreacion, @FechaModificacion", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("Nombre", value.Name);
                 sqlCommand.Parameters.AddWithValue("Descripcion", value.Description);
-                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 var result = await sqlCommand.ExecuteNonQueryAsync();
                 return result == 1;
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Categorias] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                await sqlCommand.ExecuteNonQueryAsync();
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
             }
         }
 
@@ -61,7 +62,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FechaModificacion]
                                                        FROM [dbo].[Categorias]", sqlConnection);
 
-                using var result = sqlCommand.ExecuteReader();
+                using var result = await sqlCommand.ExecuteReaderAsync();
                 List<Category> categories = new List<Category>();
 
                 while (await result.ReadAsync())
@@ -91,7 +92,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FechaModificacion]
                                                        FROM [dbo].[Categorias] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                using (var reader = sqlCommand.ExecuteReader())
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
                     var category = new Category();
                     while (reader.Read())
@@ -113,7 +114,7 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Categorias]", sqlConnection);
-                var count = (int)sqlCommand.ExecuteScalar();
+                var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
@@ -126,16 +127,13 @@ namespace TiendaServices.DataAccess.Implementations
                 SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[Categorias]
                                                         SET [Nombre] = @Nombre
                                                       ,[Descripcion] =@Descripcion
-                                                      ,[FechaCreacion] = @FechaCreacion
                                                       ,[FechaModificacion] = @FechaModificacion
                                                        WHERE Id=@id ", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
                 sqlCommand.Parameters.AddWithValue("@Nombre", value.Name);
                 sqlCommand.Parameters.AddWithValue("@Descripcion", value.Description);
-                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
 
-                var updateCategory = sqlCommand.ExecuteNonQuery();
+                var updateCategory = await sqlCommand.ExecuteNonQueryAsync();
                 return updateCategory == 1;
             }
         }

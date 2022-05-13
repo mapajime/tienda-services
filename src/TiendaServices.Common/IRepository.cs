@@ -10,7 +10,7 @@ namespace TiendaServices.Common
 
         Task<bool> UpdateAsync(TEntity value);
 
-        Task DeleteAsync(Guid id);
+        Task<bool> DeleteAsync(Guid id);
 
         Task<int> GetCountAsync();
 

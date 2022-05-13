@@ -30,11 +30,11 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[FkProducto]
                                                           ,[FkCompra])
                                                         VALUES ( @Id, @Cantidad, @Precio, @FechaCreacion, @FechaModificacion, @FkProducto, @FkCompra", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
+                sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("Cantidad", value.Quantity);
                 sqlCommand.Parameters.AddWithValue("Precio", value.Price);
-                sqlCommand.Parameters.AddWithValue("FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
+                sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("FkProducto", value.FKProduct);
                 sqlCommand.Parameters.AddWithValue("FkCompra", value.FKPurchase);
 
@@ -43,14 +43,15 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[DetalleCompras] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                await sqlCommand.ExecuteNonQueryAsync();
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
             }
         }
 
@@ -68,7 +69,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FkCompra]
                                                        FROM [dbo].[DetalleCompras]", sqlConnection);
 
-                using var result = sqlCommand.ExecuteReader();
+                using var result = await sqlCommand.ExecuteReaderAsync();
                 List<PurchaseDetail> purchaseDetails = new List<PurchaseDetail>();
 
                 while (await result.ReadAsync())
@@ -102,7 +103,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[FkCompra]
                                                        FROM [dbo].[DetalleCompras] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
-                using (var reader = sqlCommand.ExecuteReader())
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
                     var purchaseDetail = new PurchaseDetail();
                     while (reader.Read())
@@ -126,7 +127,7 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[DetalleCompras]", sqlConnection);
-                var count = (int)sqlCommand.ExecuteScalar();
+                var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
@@ -139,16 +140,13 @@ namespace TiendaServices.DataAccess.Implementations
                 SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[DetalleCompras]
                                                         SET [Cantidad] = @Cantidad
                                                          ,[Precio] =@Precio
-                                                         ,[FechaCreacion] = @FechaCreacion
                                                          ,[FechaModificacion] = @FechaModificacion
                                                          ,[FkProducto] = @FkProducto
                                                          ,[FkCompra] = @FkCompra
                                                        WHERE Id=@id ", sqlConnection);
-                sqlCommand.Parameters.AddWithValue("Id", value.Id);
                 sqlCommand.Parameters.AddWithValue("@Cantidad", value.Quantity);
                 sqlCommand.Parameters.AddWithValue("@Precio", value.Price);
-                sqlCommand.Parameters.AddWithValue("@FechaCreacion", value.CreationDate);
-                sqlCommand.Parameters.AddWithValue("@FechaModificacion", value.ModificationDate);
+                sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("@FkProducto", value.FKProduct);
                 sqlCommand.Parameters.AddWithValue("@FkCompra", value.FKPurchase);
 
