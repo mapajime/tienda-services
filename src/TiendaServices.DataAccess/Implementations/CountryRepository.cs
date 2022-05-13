@@ -7,21 +7,21 @@ using TiendaServices.Entities;
 
 namespace TiendaServices.DataAccess.Implementations
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CountryRepository : ICountryRepository
     {
         private readonly string _connectionString;
 
-        public CategoryRepository(string connectionString)
+        public CountryRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public async Task<bool> CreateAsync(Category value)
+        public async Task<bool> CreateAsync(Country value)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
-                SqlCommand sqlCommand = new SqlCommand(@"INSERT INTO [dbo].[Categorias]
+                SqlCommand sqlCommand = new SqlCommand(@"INSERT INTO [dbo].[Ciudades]
                                                            ([Id]
                                                            ,[Nombre]
                                                            ,[Descripcion]
@@ -43,14 +43,14 @@ namespace TiendaServices.DataAccess.Implementations
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
-                SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Categorias] WHERE Id = @id", sqlConnection);
+                SqlCommand sqlCommand = new SqlCommand(@"DELETE FROM [dbo].[Ciudades] WHERE Id = @id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
                 var result = await sqlCommand.ExecuteNonQueryAsync();
                 return result == 1;
             }
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync()
+        public async Task<IEnumerable<Country>> GetAllAsync()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -60,14 +60,14 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[Descripcion]
                                                       ,[FechaCreacion]
                                                       ,[FechaModificacion]
-                                                       FROM [dbo].[Categorias]", sqlConnection);
+                                                       FROM [dbo].[Ciudades]", sqlConnection);
 
                 using var result = await sqlCommand.ExecuteReaderAsync();
-                List<Category> categories = new List<Category>();
+                List<Country> countries = new List<Country>();
 
                 while (await result.ReadAsync())
                 {
-                    categories.Add(new Category
+                    countries.Add(new Country
                     {
                         Id = result.GetGuid(0),
                         Name = result["Nombre"].ToString(),
@@ -76,11 +76,11 @@ namespace TiendaServices.DataAccess.Implementations
                         ModificationDate = result.GetDateTime(4)
                     });
                 }
-                return categories;
+                return countries;
             }
         }
 
-        public async Task<Category> GetByIdAsync(Guid id)
+        public async Task<Country> GetByIdAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -90,20 +90,20 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[Descripcion]
                                                       ,[FechaCreacion]
                                                       ,[FechaModificacion]
-                                                       FROM [dbo].[Categorias] WHERE Id = @Id", sqlConnection);
+                                                       FROM [dbo].[Ciudades] WHERE Id = @Id", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", id);
                 using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
-                    var category = new Category();
+                    var county = new Country();
                     while (reader.Read())
                     {
-                        category.Id = reader.GetGuid(0);
-                        category.Name = reader.GetString(1);
-                        category.Description = reader.GetString(2);
-                        category.CreationDate = reader.GetDateTime(3);
-                        category.ModificationDate = reader.GetDateTime(4);
+                        county.Id = reader.GetGuid(0);
+                        county.Name = reader.GetString(1);
+                        county.Description = reader.GetString(2);
+                        county.CreationDate = reader.GetDateTime(3);
+                        county.ModificationDate = reader.GetDateTime(4);
                     }
-                    return category;
+                    return county;
                 }
             }
         }
@@ -113,18 +113,18 @@ namespace TiendaServices.DataAccess.Implementations
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
-                SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Categorias]", sqlConnection);
+                SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Ciudades]", sqlConnection);
                 var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
 
-        public async Task<bool> UpdateAsync(Category value)
+        public async Task<bool> UpdateAsync(Country value)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
-                SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[Categorias]
+                SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[Ciudades]
                                                         SET [Nombre] = @Nombre
                                                       ,[Descripcion] =@Descripcion
                                                       ,[FechaModificacion] = @FechaModificacion
@@ -133,8 +133,8 @@ namespace TiendaServices.DataAccess.Implementations
                 sqlCommand.Parameters.AddWithValue("@Descripcion", value.Description);
                 sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
 
-                var updateCategory = await sqlCommand.ExecuteNonQueryAsync();
-                return updateCategory == 1;
+                var updateCountry = await sqlCommand.ExecuteNonQueryAsync();
+                return updateCountry == 1;
             }
         }
     }
