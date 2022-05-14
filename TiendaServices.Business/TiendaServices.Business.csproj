@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Intarfaces\" />
-    <Folder Include="Implementations\" />
+    <ProjectReference Include="..\src\TiendaServices.DataAccess\TiendaServices.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

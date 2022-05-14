@@ -40,7 +40,7 @@ namespace TiendaServices.Business.Implementations
             }
             if ((DateTime.Now.Year - customer.DateBirth.Year) < 18)
             {
-                throw new UserInvalidException("The customer is a minor");
+                throw new UserInvalidException("The customer is younger");
             }
             customer.Active = true;
 

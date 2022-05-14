@@ -5,6 +5,6 @@ namespace TiendaServices.Business.Intarfaces
 {
     public interface ICustomerBusiness
     {
-        Task<Customer> CreateActorAsync(Customer customer);
+        Task<bool> CreateCustomerAsync(Customer customer);
     }
 }
