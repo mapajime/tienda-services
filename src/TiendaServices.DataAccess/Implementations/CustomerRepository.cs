@@ -28,17 +28,19 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[Email]
                                                           ,[Telefono]
                                                           ,[Activo]
+                                                          ,[FechaNacimiento]
                                                           ,[FechaCreacion]
                                                           ,[FechaModificacion]
                                                           ,[FkCiudad]
                                                           ,[FkTipoDocumento])
-                                                        VALUES ( @Id, @NombreUsuario, @NumeroDocumento,@Email, @Telefono, @Activo, @ @FechaCreacion, @FechaModificacion, @FkCiudad, @FkTipoDocumento", sqlConnection);
+                                                        VALUES ( @Id, @NombreUsuario, @NumeroDocumento,@Email, @Telefono, @Activo, @FechaNacimiento, @ @FechaCreacion, @FechaModificacion, @FkCiudad, @FkTipoDocumento", sqlConnection);
                 sqlCommand.Parameters.AddWithValue("Id", Guid.NewGuid());
                 sqlCommand.Parameters.AddWithValue("NombreUsuario", value.Name);
                 sqlCommand.Parameters.AddWithValue("NumeroDocumento", value.DocumentNumber);
                 sqlCommand.Parameters.AddWithValue("Email", value.Email);
                 sqlCommand.Parameters.AddWithValue("Telefono", value.Phone);
                 sqlCommand.Parameters.AddWithValue("Activo", value.Active);
+                sqlCommand.Parameters.AddWithValue("FechaNacimiento", value.DateBirth);
                 sqlCommand.Parameters.AddWithValue("FechaCreacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("FkCiudad", value.FKCountry);
@@ -71,6 +73,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[Email]
                                                           ,[Telefono]
                                                           ,[Activo]
+                                                          ,[FechaNacimiento]
                                                           ,[FechaCreacion]
                                                           ,[FechaModificacion]
                                                           ,[FkCiudad]
@@ -90,10 +93,11 @@ namespace TiendaServices.DataAccess.Implementations
                         Email = result.GetString(3),
                         Phone = result.GetString(4),
                         Active = result.GetBoolean(5),
-                        CreationDate = result.GetDateTime(6),
-                        ModificationDate = result.GetDateTime(7),
-                        FKCountry = result.GetGuid(8),
-                        FKDocument = result.GetGuid(9)
+                        DateBirth = result.GetDateTime(6),
+                        CreationDate = result.GetDateTime(7),
+                        ModificationDate = result.GetDateTime(8),
+                        FKCountry = result.GetGuid(9),
+                        FKDocument = result.GetGuid(10)
                     });
                 }
                 return customers;
@@ -112,6 +116,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[Email]
                                                           ,[Telefono]
                                                           ,[Activo]
+                                                          ,[FechaNacimiento]
                                                           ,[FechaCreacion]
                                                           ,[FechaModificacion]
                                                           ,[FkCiudad]
@@ -129,10 +134,11 @@ namespace TiendaServices.DataAccess.Implementations
                         customer.Email = reader.GetString(3);
                         customer.Phone = reader.GetString(4);
                         customer.Active = reader.GetBoolean(5);
-                        customer.CreationDate = reader.GetDateTime(6);
-                        customer.ModificationDate = reader.GetDateTime(7);
-                        customer.FKCountry = reader.GetGuid(8);
-                        customer.FKDocument = reader.GetGuid(9);
+                        customer.DateBirth = reader.GetDateTime(6);
+                        customer.CreationDate = reader.GetDateTime(7);
+                        customer.ModificationDate = reader.GetDateTime(8);
+                        customer.FKCountry = reader.GetGuid(9);
+                        customer.FKDocument = reader.GetGuid(10);
                     }
                     return customer;
                 }
@@ -161,6 +167,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                           ,[Email] = @Email
                                                           ,[Telefono] = @Telefono
                                                           ,[Activo] =@Activo
+                                                          ,[FechaNacimiento] = @FechaNacimiento
                                                           ,[FechaModificacion] = @FechaModificacion
                                                           ,[FkCiudad] = @FkCiudad
                                                           ,[FkTipoDocumento] = @FkTipoDocumento
@@ -170,6 +177,7 @@ namespace TiendaServices.DataAccess.Implementations
                 sqlCommand.Parameters.AddWithValue("@Email", value.Email);
                 sqlCommand.Parameters.AddWithValue("@Telefono", value.Phone);
                 sqlCommand.Parameters.AddWithValue("@Activo", value.Active);
+                sqlCommand.Parameters.AddWithValue("@FechaNacimiento", value.DateBirth);
                 sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
                 sqlCommand.Parameters.AddWithValue("@FkCiudad", value.FKCountry);
                 sqlCommand.Parameters.AddWithValue("@FkTipoDocumento", value.FKDocument);
