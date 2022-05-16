@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace TiendaServices.Common
+namespace TiendaServices.Common.Data
 {
     public interface IRepository<TEntity> where TEntity : IEntity
     {

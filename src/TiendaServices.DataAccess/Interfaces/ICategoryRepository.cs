@@ -1,4 +1,4 @@
-﻿using TiendaServices.Common;
+﻿using TiendaServices.Common.Data;
 using TiendaServices.Entities;
 
 namespace TiendaServices.DataAccess.Interfaces
