@@ -24,8 +24,8 @@ namespace TiendaServices.Business.Tests.Implementations
         public async Task CreateCategoryAsync_WhenCategoryIsNull_ShouldThrowCategoryInvalidException()
         {
             var categoryBusiness = new CategoryBusiness(_mockCategoryRepository.Object);
-            var excepction = await Assert.ThrowsAsync<CategoryInvalidException>(() => categoryBusiness.CreateCategoryAsync(null));
-            Assert.Contains("The category is null", excepction.Message);
+            var exception = await Assert.ThrowsAsync<CategoryInvalidException>(() => categoryBusiness.CreateCategoryAsync(null));
+            Assert.Contains("The category is null", exception.Message);
             _mockCategoryRepository.Verify(c => c.CreateAsync(It.IsAny<Category>()), Times.Never);
         }
 
@@ -53,7 +53,7 @@ namespace TiendaServices.Business.Tests.Implementations
         }
 
         [Fact]
-        public async Task CreateCategoryAsync_WhenNameCategoryIsOk_ShouldReturnCategory()
+        public async Task CreateCategoryAsync_WhenNameCategoryIsOk_ShouldReturnTrue()
         {
             Category category = null;
             _mockCategoryRepository.Setup(m => m.CreateAsync(It.IsAny<Category>()))
@@ -78,7 +78,7 @@ namespace TiendaServices.Business.Tests.Implementations
         }
 
         [Fact]
-        public async Task GetAllCategoriesAsync_WhenIdCategoryExist_ShouldDeleteCategory()
+        public async Task GetAllCategoriesAsync_WhenCategoryExist_ShouldReturnAllCategory()
         {
             _mockCategoryRepository.Setup(c => c.GetAllAsync()).ReturnsAsync(
                 new List<Category>
@@ -152,21 +152,25 @@ namespace TiendaServices.Business.Tests.Implementations
             _mockCategoryRepository.Verify(c => c.UpdateAsync(It.IsAny<Category>()), Times.Once);
         }
 
-
         [Fact]
         public async Task UpdateCategoryAsync_WhenCategoryExists_ShouldThrowCategoryInvalidException()
         {
+            Category category = null;
+            _mockCategoryRepository.Setup(m => m.CreateAsync(It.IsAny<Category>()))
+                .Callback<Category>(c => category = c)
+                .ReturnsAsync(true);
             var categoryBusiness = new CategoryBusiness(_mockCategoryRepository.Object);
-            var exception = await Assert.ThrowsAsync<CategoryInvalidException>(() => categoryBusiness.UpdateCategoryAsync(new Category {Name="Aseo" }));
+            var exception = await Assert.ThrowsAsync<CategoryInvalidException>(() => categoryBusiness.UpdateCategoryAsync(new Category { Name = "Aseo" }));
             Assert.Contains("The category already exists", exception.Message);
+            Assert.Contains("Aseo", category.Name);
             _mockCategoryRepository.Verify(c => c.UpdateAsync(It.IsAny<Category>()), Times.Never);
         }
 
         [Fact]
         public async Task GetCategoryByNameAsync_WhenCategoryIsNull_ShouldReturnNull()
         {
-            var categiryBusiness = new CategoryBusiness(_mockCategoryRepository.Object);
-            var result = await categiryBusiness.GetCategoryByNameAsync(string.Empty);
+            var categoryBusiness = new CategoryBusiness(_mockCategoryRepository.Object);
+            var result = await categoryBusiness.GetCategoryByNameAsync(string.Empty);
             Assert.Null(result);
         }
 
