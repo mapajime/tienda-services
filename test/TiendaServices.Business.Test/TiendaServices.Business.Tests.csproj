@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\TiendaServices.DataAccess\TiendaServices.DataAccess.csproj" />
-    <ProjectReference Include="..\TiendaServices.Business\TiendaServices.Business.csproj" />
+    <ProjectReference Include="..\..\src\TiendaServices.DataAccess\TiendaServices.DataAccess.csproj" />
+    <ProjectReference Include="..\..\src\TiendaServices.Business\TiendaServices.Business.csproj" />
   </ItemGroup>
 
 </Project>
