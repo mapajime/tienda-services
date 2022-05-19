@@ -2,4 +2,4 @@
 
 
 #### Badges
-[![build and test](https://github.com/mapajime/tienda-services/actions/workflows/dotnet.yml/badge.svg)](https://github.com/mapajime/tienda-services/actions/workflows/dotnet.yml)
+[![build tienda services](https://github.com/mapajime/tienda-services/actions/workflows/build-validation.yml/badge.svg)](https://github.com/mapajime/tienda-services/actions/workflows/build-validation.yml)
