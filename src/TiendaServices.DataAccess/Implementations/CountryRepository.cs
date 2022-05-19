@@ -119,6 +119,37 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
+        public async Task<Country> GetCountryByNameAsync(string name)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand sqlCommand = new SqlCommand(@"SELECT[Id]
+                                                            ,[Nombre]
+                                                            ,[Descripcion]
+                                                            ,[FechaModificacion]
+                                                            ,[FechaCreacion]
+                                                        FROM[dbo].[Ciudades] WHERE Nombre = @name", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Name", name);
+
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
+                {
+                    if (!reader.HasRows) return null;
+
+                    Country country = new Country();
+                    while (reader.Read())
+                    {
+                        country.Id = reader.GetGuid(0);
+                        country.Name = reader.GetString(1);
+                        country.Description = reader.GetString(2);
+                        country.CreationDate = reader.GetDateTime(3);
+                        country.ModificationDate = reader.GetDateTime(4);
+                    }
+                    return country;
+                }
+            }
+        }
+
         public async Task<bool> UpdateAsync(Country value)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
