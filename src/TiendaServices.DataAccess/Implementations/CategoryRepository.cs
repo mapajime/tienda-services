@@ -108,6 +108,32 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
+        public async Task<Category> GetCategoryByNameAsync(string name)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand("SELECT id, nombre, descripcion, fechaCreacion, fechaModificacion FROM [dbo].[Categorias] WHERE nombre = @name", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Name", name);
+
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
+                {
+                    if (!reader.HasRows) return null;
+
+                    var category = new Category();
+                    while (reader.Read())
+                    {
+                        category.Id = reader.GetGuid(0);
+                        category.Name = reader.GetString(1);
+                        category.Description = reader.GetString(2);
+                        category.CreationDate = reader.GetDateTime(3);
+                        category.ModificationDate = reader.GetDateTime(4);
+                    }
+                    return category;
+                }
+            }
+        }
+
         public async Task<int> GetCountAsync()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
