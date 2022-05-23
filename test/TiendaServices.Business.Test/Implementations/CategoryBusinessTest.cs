@@ -104,7 +104,6 @@ namespace TiendaServices.Business.Tests.Implementations
             Assert.NotNull(response);
             Assert.Equal("Category 1", response.First().Name);
             Assert.Equal(2, response.Count);
-            _mockCategoryRepository.Verify(c => c.UpdateAsync(It.IsAny<Category>()), Times.Once);
         }
 
         [Fact]

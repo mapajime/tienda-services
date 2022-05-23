@@ -20,7 +20,7 @@ namespace TiendaServices.Business.Implementations
 
         public async Task<bool> CreateCityAsync(City city)
         {
-            Validate(city);
+            await ValidateAsync(city);
             var isCity = await _cityRepository.CreateAsync(city);
             return isCity;
         }
@@ -45,12 +45,12 @@ namespace TiendaServices.Business.Implementations
 
         public async Task<bool> UpdateCityAsync(City city)
         {
-            Validate(city);
+            await ValidateAsync(city);
             var isUpdateCity = await _cityRepository.UpdateAsync(city);
             return isUpdateCity;
         }
 
-        private void Validate(City city)
+        private async Task ValidateAsync(City city)
         {
             if (city == null)
             {
@@ -60,7 +60,7 @@ namespace TiendaServices.Business.Implementations
             {
                 throw new CityInvalidException("The City is empty or null");
             }
-            if (_cityRepository.GetByNameAsync(city.Name) != null)
+            if (await _cityRepository.GetByNameAsync(city.Name) != null)
             {
                 throw new CityInvalidException("The City name already exists");
             }
