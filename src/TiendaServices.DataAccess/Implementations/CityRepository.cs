@@ -7,16 +7,16 @@ using TiendaServices.Entities;
 
 namespace TiendaServices.DataAccess.Implementations
 {
-    public class CountryRepository : ICountryRepository
+    public class CityRepository : ICityRepository
     {
         private readonly string _connectionString;
 
-        public CountryRepository(string connectionString)
+        public CityRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public async Task<bool> CreateAsync(Country value)
+        public async Task<bool> CreateAsync(City value)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -50,7 +50,7 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
-        public async Task<IEnumerable<Country>> GetAllAsync()
+        public async Task<IEnumerable<City>> GetAllAsync()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -63,11 +63,11 @@ namespace TiendaServices.DataAccess.Implementations
                                                        FROM [dbo].[Ciudades]", sqlConnection);
 
                 using var result = await sqlCommand.ExecuteReaderAsync();
-                List<Country> countries = new List<Country>();
+                List<City> countries = new List<City>();
 
                 while (await result.ReadAsync())
                 {
-                    countries.Add(new Country
+                    countries.Add(new City
                     {
                         Id = result.GetGuid(0),
                         Name = result["Nombre"].ToString(),
@@ -80,7 +80,7 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
-        public async Task<Country> GetByIdAsync(Guid id)
+        public async Task<City> GetByIdAsync(Guid id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -94,7 +94,7 @@ namespace TiendaServices.DataAccess.Implementations
                 sqlCommand.Parameters.AddWithValue("Id", id);
                 using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
-                    var county = new Country();
+                    var county = new City();
                     while (reader.Read())
                     {
                         county.Id = reader.GetGuid(0);
@@ -119,7 +119,7 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
-        public async Task<Country> GetCountryByNameAsync(string name)
+        public async Task<City> GetByNameAsync(string name)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -136,21 +136,21 @@ namespace TiendaServices.DataAccess.Implementations
                 {
                     if (!reader.HasRows) return null;
 
-                    Country country = new Country();
+                    City city = new City();
                     while (reader.Read())
                     {
-                        country.Id = reader.GetGuid(0);
-                        country.Name = reader.GetString(1);
-                        country.Description = reader.GetString(2);
-                        country.CreationDate = reader.GetDateTime(3);
-                        country.ModificationDate = reader.GetDateTime(4);
+                        city.Id = reader.GetGuid(0);
+                        city.Name = reader.GetString(1);
+                        city.Description = reader.GetString(2);
+                        city.CreationDate = reader.GetDateTime(3);
+                        city.ModificationDate = reader.GetDateTime(4);
                     }
-                    return country;
+                    return city;
                 }
             }
         }
 
-        public async Task<bool> UpdateAsync(Country value)
+        public async Task<bool> UpdateAsync(City value)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
@@ -164,8 +164,8 @@ namespace TiendaServices.DataAccess.Implementations
                 sqlCommand.Parameters.AddWithValue("@Descripcion", value.Description);
                 sqlCommand.Parameters.AddWithValue("@FechaModificacion", DateTime.UtcNow);
 
-                var updateCountry = await sqlCommand.ExecuteNonQueryAsync();
-                return updateCountry == 1;
+                var updateCity = await sqlCommand.ExecuteNonQueryAsync();
+                return updateCity == 1;
             }
         }
     }
