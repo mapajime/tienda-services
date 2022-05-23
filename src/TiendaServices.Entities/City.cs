@@ -3,7 +3,7 @@ using TiendaServices.Common.Data;
 
 namespace TiendaServices.Entities
 {
-    public class Country : IEntity
+    public class City : IEntity
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
