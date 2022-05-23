@@ -62,7 +62,7 @@ namespace TiendaServices.Business.Tests.Implementations
             var result = await cityBusiness.CreateCityAsync(new City { Name = "Medellin", Description = "Es la capital de Antioquia" });
             Assert.True(result);
             Assert.NotNull(city.Name);
-            //Assert.Equal("Medellin", city.Name);
+            Assert.Equal("Medellin", city.Name);
             _mockCityRepository.Verify(c => c.CreateAsync(It.IsAny<City>()), Times.Once);
         }
 
@@ -152,6 +152,8 @@ namespace TiendaServices.Business.Tests.Implementations
         [Fact]
         public async Task UpdateCityAsync_WhenCityIsOk_ShouldReturnTrue()
         {
+            _mockCityRepository.Setup(c => c.GetByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync((City)null);
             _mockCityRepository.Setup(c => c.UpdateAsync(It.IsAny<City>())).ReturnsAsync(true);
             var cityBusiness = new CityBusiness(_mockCityRepository.Object);
             var isCity = await cityBusiness.UpdateCityAsync(new City

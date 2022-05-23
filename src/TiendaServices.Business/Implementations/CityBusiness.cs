@@ -13,9 +13,9 @@ namespace TiendaServices.Business.Implementations
     {
         private readonly ICityRepository _cityRepository;
 
-        public CityBusiness(ICityRepository CityRepository)
+        public CityBusiness(ICityRepository cityRepository)
         {
-            _cityRepository = CityRepository;
+            _cityRepository = cityRepository;
         }
 
         public async Task<bool> CreateCityAsync(City city)
