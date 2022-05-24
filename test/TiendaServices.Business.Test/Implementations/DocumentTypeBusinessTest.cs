@@ -107,8 +107,8 @@ namespace TiendaServices.Business.Tests.Implementations
                 {
                     Name = "Pasaporte"
                 });
-            var documentTeBusiness = new DocumentTypeBusiness(_mockDocumentTypeRepository.Object);
-            var result = await documentTeBusiness.GetDocumentTypeByIdAsync(Guid.Empty);
+            var docuemntTypeBusiness = new DocumentTypeBusiness(_mockDocumentTypeRepository.Object);
+            var result = await docuemntTypeBusiness.GetDocumentTypeByIdAsync(Guid.Empty);
             Assert.NotNull(result);
             Assert.Equal("Pasaporte", result.Name);
             _mockDocumentTypeRepository.Verify(c => c.GetByIdAsync(It.IsAny<Guid>()), Times.Once);
