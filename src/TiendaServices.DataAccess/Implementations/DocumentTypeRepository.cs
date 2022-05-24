@@ -102,13 +102,40 @@ namespace TiendaServices.DataAccess.Implementations
             }
         }
 
+        public async Task<DocumentType> GetByNameAsync(string name)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"SELECT [Id]
+                                                      ,[Nombre]
+                                                      ,[FechaCreacion]
+                                                      ,[FechaModificacion]
+                                                       FROM [dbo].[TipoDocumentos] WHERE nombre = @name", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("name", name);
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
+                {
+                    if (reader.HasRows) return null;
+                    DocumentType documentType = new DocumentType();
+                    while (reader.Read())
+                    {
+                        documentType.Id = reader.GetGuid(0);
+                        documentType.Name = reader.GetString(1);
+                        documentType.CreationDate = reader.GetDateTime(2);
+                        documentType.ModificationDate = reader.GetDateTime(3);
+                    }
+                    return documentType;
+                }
+            }
+        }
+
         public async Task<int> GetCountAsync()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[TipoDocumentos]", sqlConnection);
-                var count = (int) await sqlCommand.ExecuteScalarAsync();
+                var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
             }
         }
