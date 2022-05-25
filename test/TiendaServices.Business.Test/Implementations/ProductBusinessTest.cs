@@ -114,8 +114,8 @@ namespace TiendaServices.Business.Tests.Implementations
                     Active = true,
                     Description = "Lacteos",
                     Trademark = "Alpina",
-                    CreationDate = new DateTime(2022 / 1 / 3),
-                    ModificationDate = new DateTime(2022 / 5 / 3),
+                    CreationDate = new DateTime(2022, 1, 3),
+                    ModificationDate = new DateTime(2022, 5, 3),
                     FKCategory = Guid.Empty
                 }); ;
             var productBusiness = new ProductBusiness(_mockProductRepository.Object);
@@ -137,8 +137,8 @@ namespace TiendaServices.Business.Tests.Implementations
                    Active = true,
                    Description = "Granos",
                    Trademark = "Tosh",
-                   CreationDate = new DateTime(2021 / 1 / 3),
-                   ModificationDate = new DateTime(2022 / 1 / 3),
+                   CreationDate = new DateTime(2021, 1, 3),
+                   ModificationDate = new DateTime(2022, 1, 3),
                    FKCategory = Guid.Empty
                }); ;
             var productBusiness = new ProductBusiness(_mockProductRepository.Object);
@@ -162,8 +162,8 @@ namespace TiendaServices.Business.Tests.Implementations
                        Active = true,
                        Description = "Cereal",
                        Trademark = "Tosh",
-                       CreationDate = new DateTime(2019 / 1 / 3),
-                       ModificationDate = new DateTime(2020 / 1 / 3),
+                       CreationDate = new DateTime(2019 ,1, 3),
+                       ModificationDate = new DateTime(2020, 1, 3),
                        FKCategory = Guid.Empty
                     },
                     new Product
@@ -174,8 +174,8 @@ namespace TiendaServices.Business.Tests.Implementations
                        Active = true,
                        Description = "Cereal",
                        Trademark = "Nuthos",
-                       CreationDate = new DateTime(2022 / 1 / 3),
-                       ModificationDate = new DateTime(2022 / 16/ 30),
+                       CreationDate = new DateTime(2022, 1,3),
+                       ModificationDate = new DateTime(2022, 16, 30),
                        FKCategory = Guid.Empty
                     },
                        new Product
@@ -186,8 +186,8 @@ namespace TiendaServices.Business.Tests.Implementations
                        Active = true,
                        Description = "Cereal",
                        Trademark = "Nuthos",
-                       CreationDate = new DateTime(2022 / 1 / 3),
-                       ModificationDate = new DateTime(2022 / 16/ 30),
+                       CreationDate = new DateTime(2022, 1, 3),
+                       ModificationDate = new DateTime(2022, 16, 30),
                        FKCategory = Guid.Empty
                     }
                 });
@@ -212,9 +212,7 @@ namespace TiendaServices.Business.Tests.Implementations
                        Stock = 4,
                        Active = true,
                        Description = "Cereal",
-                       Trademark = "Nuthos",
-                       CreationDate = new DateTime(2022 / 1 / 3),
-                       ModificationDate = new DateTime(2022 / 16/ 30),
+                       Trademark = "Nutho",
                        FKCategory = Guid.Empty
                     },
                       new Product
@@ -225,14 +223,15 @@ namespace TiendaServices.Business.Tests.Implementations
                        Active = false,
                        Description = "Cereal",
                        Trademark = "Nuthos",
-                       CreationDate = new DateTime(2021 / 1 / 3),
-                       ModificationDate = new DateTime(2022 / 16/ 30),
                        FKCategory = Guid.Empty
                     }
              });
             var productBusiness = new ProductBusiness(_mockProductRepository.Object);
-            var result = await productBusiness.GetAllActiveProducts();
+            var result = (await productBusiness.GetAllActiveProducts()).ToList();
             Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
+            Assert.Contains("Ciruelas", result.Last().ProductName);
+            Assert.Equal("Nuthos", result[1].Trademark);
 
             _mockProductRepository.Verify(c => c.GetAllActiveProducts(), Times.Once);
         }
@@ -240,9 +239,9 @@ namespace TiendaServices.Business.Tests.Implementations
         [Fact]
         public async Task GetProductsThatMatchNameAndAreActive_WhenProductsThatMatchNameAndAreActive_ShouldReturnProducts()
         {
-            Product product = null;
-            _mockProductRepository.Setup(p => p.GetProductsThatMatchNameAndAreActive(It.IsAny<string>())).
-                Callback<Product>(p => product.ProductName = p.ProductName)
+            string productName = null;
+            _mockProductRepository.Setup(p => p.GetProductsThatMatchNameAndAreActive(It.IsAny<string>()))
+                .Callback<string>(p => productName = p)
                 .ReturnsAsync(
                     new List<Product> {
                     new Product
@@ -253,15 +252,17 @@ namespace TiendaServices.Business.Tests.Implementations
                         Active = true,
                         Description = "Cereal",
                         Trademark = "Tosh",
-                        CreationDate = new DateTime(2019 / 1 / 3),
-                        ModificationDate = new DateTime(2020 / 1 / 3),
+                        CreationDate = new DateTime(2019,12,3),
+                        ModificationDate = new DateTime(2020,3,4),
                         FKCategory = Guid.Empty
                     }});
             var productBusiness = new ProductBusiness(_mockProductRepository.Object);
-            var result = await productBusiness.GetProductsThatMatchNameAndAreActive(It.IsAny<string>());
+            var result = await productBusiness.GetProductsThatMatchNameAndAreActive("Granola");
             Assert.NotNull(result);
-            Assert.True(product.Active);
-            Assert.Equal("Granola", product.ProductName);
+            Assert.Equal("Granola", productName);
+            Assert.Single(result);
+            Assert.Contains(result, p => p.Description == "Cereal");
+            Assert.Equal("Tosh", result.First().Trademark);
 
             _mockProductRepository.Verify(c => c.GetProductsThatMatchNameAndAreActive(It.IsAny<string>()), Times.Once);
         }
