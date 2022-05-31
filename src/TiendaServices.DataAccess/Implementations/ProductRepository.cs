@@ -75,7 +75,7 @@ namespace TiendaServices.DataAccess.Implementations
                                                       ,[FechaCreacion]
                                                       ,[FechaModificacion]
                                                       ,[FkCategoria]
-                                                       FROM [dbo].[Produtos]", sqlConnection);
+                                                       FROM [dbo].[Productos]", sqlConnection);
 
                 using var result = await sqlCommand.ExecuteReaderAsync();
                 List<Product> products = new List<Product>();
@@ -144,8 +144,121 @@ namespace TiendaServices.DataAccess.Implementations
             {
                 await sqlConnection.OpenAsync();
                 SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Produtos]", sqlConnection);
-                var count = (int) await sqlCommand.ExecuteScalarAsync();
+                var count = (int)await sqlCommand.ExecuteScalarAsync();
                 return count;
+            }
+        }
+
+        public async Task<bool> DeactivateProduct(Guid id)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"UPDATE [dbo].[Productos]
+                                                       SET [Activo] = 0
+                                                       WHERE Id = @id", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Id", id);
+                var result = await sqlCommand.ExecuteNonQueryAsync();
+                return result == 1;
+            }
+        }
+
+        public async Task<IEnumerable<Product>> GetAllActiveProductsByCategory(Guid idCategory)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"SELECT p.Id, p.NombreProducto,	p.Precio,p.Marca, p.Descripcion	,p.Stock, p.Activo, p.FechaCreacion,p.FechaModificacion
+                                                        FROM [dbo].[Productos] p
+                                                        INNER JOIN [dbo].[Categorias] c ON C.Id = P.FkCategoria
+                                                        WHERE p.Activo= 1 and c.Id = @idCategory", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("IdCategory", idCategory);
+
+                using (var result = await sqlCommand.ExecuteReaderAsync())
+                {
+                    List<Product> products = new List<Product>();
+                    while (await result.ReadAsync())
+                    {
+                        products.Add(new Product
+                        {
+                            Id = result.GetGuid(0),
+                            ProductName = result.GetString(1),
+                            Price = result.GetFloat(2),
+                            Trademark = result.GetString(3),
+                            Description = result.GetString(4),
+                            Stock = result.GetInt32(5),
+                            Active = result.GetBoolean(6),
+                            CreationDate = result.GetDateTime(7),
+                            ModificationDate = result.GetDateTime(8)
+                        });
+                    }
+                    return products;
+                }
+            }
+        }
+
+        public async Task<IEnumerable<Product>> GetAllActiveProducts()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"SELECT p.Id, p.NombreProducto,	p.Precio,p.Marca, p.Descripcion	,p.Stock, p.Activo, p.FechaCreacion,p.FechaModificacion
+                                                        FROM [dbo].[Productos] p
+                                                        WHERE p.Activo= 1", sqlConnection);
+
+                using (var result = await sqlCommand.ExecuteReaderAsync())
+                {
+                    List<Product> products = new List<Product>();
+                    while (await result.ReadAsync())
+                    {
+                        products.Add(new Product
+                        {
+                            Id = result.GetGuid(0),
+                            ProductName = result.GetString(1),
+                            Price = result.GetFloat(2),
+                            Trademark = result.GetString(3),
+                            Description = result.GetString(4),
+                            Stock = result.GetInt32(5),
+                            Active = result.GetBoolean(6),
+                            CreationDate = result.GetDateTime(7),
+                            ModificationDate = result.GetDateTime(8)
+                        });
+                    }
+                    return products;
+                }
+            }
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsThatMatchNameAndAreActive(string name)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                SqlCommand sqlCommand = new SqlCommand(@"SELECT p.Id, p.NombreProducto,	p.Precio,p.Marca, p.Descripcion	,p.Stock, p.Activo, p.FechaCreacion,p.FechaModificacion
+                                                        FROM [dbo].[Productos] p
+                                                        WHERE p.Activo= 1 and p.NombreProducto like '%@name%'", sqlConnection);
+                sqlCommand.Parameters.AddWithValue("Name", name);
+
+                using (var result = await sqlCommand.ExecuteReaderAsync())
+                {
+                    List<Product> products = new List<Product>();
+                    while (await result.ReadAsync())
+                    {
+                        products.Add(new Product
+                        {
+                            Id = result.GetGuid(0),
+                            ProductName = result.GetString(1),
+                            Price = result.GetFloat(2),
+                            Trademark = result.GetString(3),
+                            Description = result.GetString(4),
+                            Stock = result.GetInt32(5),
+                            Active = result.GetBoolean(6),
+                            CreationDate = result.GetDateTime(7),
+                            ModificationDate = result.GetDateTime(8)
+                        });
+                    }
+                    return products;
+                }
             }
         }
 
