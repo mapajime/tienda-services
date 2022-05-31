@@ -175,7 +175,7 @@ namespace TiendaServices.Business.Tests.Implementations
                        Description = "Cereal",
                        Trademark = "Nuthos",
                        CreationDate = new DateTime(2022, 1,3),
-                       ModificationDate = new DateTime(2022, 16, 30),
+                       ModificationDate = new DateTime(2022, 1, 30),
                        FKCategory = Guid.Empty
                     },
                        new Product
@@ -187,7 +187,7 @@ namespace TiendaServices.Business.Tests.Implementations
                        Description = "Cereal",
                        Trademark = "Nuthos",
                        CreationDate = new DateTime(2022, 1, 3),
-                       ModificationDate = new DateTime(2022, 16, 30),
+                       ModificationDate = new DateTime(2022, 1, 30),
                        FKCategory = Guid.Empty
                     }
                 });
